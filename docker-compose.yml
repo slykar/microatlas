@@ -7,6 +7,8 @@ services:
       # Some envs are loaded from .env file in the project root
       FLASK_APP: mapsrv/main.py
       FLASK_ENV: development
+      AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+      AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
     entrypoint: flask run --host=0.0.0.0
     volumes:
       - ./services/mapsrv:/usr/src/app:cached
