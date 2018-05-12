@@ -2,6 +2,13 @@ version: '3'
 
 services:
 
+  gateway:
+    build: ./services/gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./services/gateway/conf.d:/etc/nginx/conf.d/:cached
+
   mapsrv:
     build: ./services/mapsrv
     environment:
