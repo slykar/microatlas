@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  mapsrv:
+    build: ./services/mapsrv
+    environment:
+      # Some envs are loaded from .env file in the project root
+      FLASK_APP: mapsrv/main.py
+      FLASK_ENV: development
+    entrypoint: flask run --host=0.0.0.0
+    volumes:
+      - ./services/mapsrv:/usr/src/app:cached
