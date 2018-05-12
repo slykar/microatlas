@@ -52,7 +52,7 @@
             maxNativeZoom: 24,
         });
 
-        var map = L.map('map', {
+        const map = L.map('map', {
             center: [32.314, -95.689],
             zoom: 16,
             minZoom: 0,
@@ -60,12 +60,12 @@
             layers: [osm]
         });
 
-        var baseLayers = {
+        const baseLayers = {
             "OSM": osm,
             "Satelite": mapbox,
         };
 
-        var overlays = {
+        const overlays = {
             "sample": sample,
         };
 

@@ -1,5 +1,5 @@
 from flask import Flask, send_file, abort, Response
-from . import s3tiles
+import s3tiles
 
 app = Flask(__name__)
 
