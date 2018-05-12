@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   mapsrv:
     build: ./services/mapsrv
     environment:
@@ -12,3 +13,9 @@ services:
     entrypoint: flask run --host=0.0.0.0
     volumes:
       - ./services/mapsrv:/usr/src/app:cached
+
+  map:
+    build: ./services/map
+    volumes:
+      - ./services/map:/usr/share/nginx/html:cached
+
