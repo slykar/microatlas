@@ -10,6 +10,7 @@ services:
       - ./services/gateway/conf.d:/etc/nginx/conf.d/:cached
 
   mapsrv:
+    image: ${REGISTRY}/mapsrv
     build: ./services/mapsrv
     environment:
       # Some envs are loaded from .env file in the project root
@@ -22,6 +23,7 @@ services:
       - ./services/mapsrv:/usr/src/app:cached
 
   map:
+    image: ${REGISTRY}/map
     build: ./services/map
     volumes:
       - ./services/map:/usr/share/nginx/html:cached

@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  gateway:
+    image: ${REGISTRY}/gateway:${VERSION}
+    build: ./services/gateway
+
+  mapsrv:
+    image: ${REGISTRY}/mapsrv:${VERSION}
+    build: ./services/mapsrv
+
+  map:
+    image: ${REGISTRY}/map:${VERSION}
+    build: ./services/map
