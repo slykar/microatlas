@@ -1,11 +1,19 @@
+import os
 from flask import Flask, send_file, abort, Response
 import s3tiles
 
 app = Flask(__name__)
 
+HOSTNAME = os.getenv('HOSTNAME', 'unknown host')
+
+
+@app.route('/')
+def home():
+    return f'Up and running on {HOSTNAME}!'
+
 
 @app.route('/<layer>/<int:zoom>/<int:x>/<int:y>')
-def home(layer, zoom, x, y):
+def get_tile(layer, zoom, x, y):
     # TODO: should re-validate cache if the file is younger than 204 response max-age
     try:
         tile_data = s3tiles.get_tile(layer, zoom, x, y)

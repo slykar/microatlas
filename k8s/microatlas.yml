@@ -1,0 +1,120 @@
+# Minimal configuration exposing map frontend with mapsrv backend.
+# All in one file for now... Services go first, then we have Deployment objects.
+
+# ============================================================
+# Frontend Map LB
+# ------------------------------------------------------------
+# Exposes the frontend to the open world via load balancer.
+# ============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: map
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: map-port
+  selector:
+    app: map
+---
+# ==================================================================
+# Backend Service
+# ------------------------------------------------------------------
+# Internally exposed to be used by frontend.
+# Request to this service are proxied by frontend's nginx server.
+# ==================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: mapsrv
+spec:
+  selector:
+    app: mapsrv
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: mapsrv-port
+---
+# ===============================================================
+# Frontend Deployment
+# ---------------------------------------------------------------
+# Serves static files and proxies requests to backend service.
+# ===============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: map
+  labels:
+    project: microatlas
+    app: map
+spec:
+  selector:
+    matchLabels:
+      project: microatlas
+      app: map
+  template:
+    metadata:
+      name: map
+      labels:
+        project: microatlas
+        app: map
+    spec:
+      containers:
+        - name: map
+          image: gcr.io/microatlas-203915/map:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: map-port
+---
+# ===============================
+# Backend Deployment
+# -------------------------------
+# Serves tiles from S3 bucket.
+# ===============================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mapsrv
+  labels:
+    project: microatlas
+    app: mapsrv
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mapsrv
+  template:
+    metadata:
+      name: mapsrv
+      labels:
+        project: microatlas
+        app: mapsrv
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: mapsrv
+        image: gcr.io/microatlas-203915/mapsrv:latest
+        imagePullPolicy: Always
+        command: ["flask"]
+        args: ["run", "--host=0.0.0.0"]
+        ports:
+          - name: mapsrv-port
+            containerPort: 5000
+        env:
+          - name: FLASK_APP
+            value: mapsrv/main.py
+          - name: FLASK_ENV
+            value: production
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: mapsrv-aws
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: mapsrv-aws
+                key: AWS_SECRET_ACCESS_KEY
